@@ -4,47 +4,7 @@ from pygame.locals import *
 from OpenGL.GL import *
 from OpenGL.GLU import *
 import numpy as np
-'''
-verticies = [] 
-
-for i in range(0,8):
-    a = int(input("a : "))
-    b = int(input("b : "))
-    c = int(input("c : "))
-    l = []
-    l.append(a)
-    l.append(b)
-    l.append(c)
-    verticies.append(l)
-print (verticies)
-
-
-verticies =  np.array([
-    [1, -1, -1],
-    [1, 1, -1],
-    [-1, 1, -1],
-    [-1, -1, -1],
-    [1, -1, 1],
-    [1, 1, 1],
-    [-1, -1, 1],
-    [-1, 1, 1]
-])
-edges = np.array([
-    [0,1],
-    [0,3],
-    [0,4],
-    [2,1],
-    [2,3],
-    [2,7],
-    [6,3],
-    [6,4],
-    [6,7],
-    [5,1],
-    [5,4],
-    [5,7]
-])
-'''
-
+import threading
 
 def shear(verticies, param, k):
     if param == 'x':
@@ -224,26 +184,54 @@ def Cube(verticies,edges,surfaces,colors):
         for vertex in edge:
             glVertex3fv(verticies[vertex])
     
-    glVertex3fv([-1000,0,0])
-    glVertex3fv([1000,0,0])
-    glVertex3fv([0,-1000,0])
-    glVertex3fv([0,1000,0])
-    glVertex3fv([0,0,-1000])
-    glVertex3fv([0,0,1000])
-    for i in range(-500,500,10):    
-        glVertex3fv([500,0,i])
-        glVertex3fv([-500,0,i])
-        glVertex3fv([0,500,i])
-        glVertex3fv([0,-500,i])
-        glVertex3fv([500,i,0])
-        glVertex3fv([-500,i,0])
-        glVertex3fv([0,i,500])
-        glVertex3fv([0,i,-500])
-        glVertex3fv([i,500,0])
-        glVertex3fv([i,-500,0])
-        glVertex3fv([i,0,500])
-        glVertex3fv([i,0,-500])
+    glColor3fv([255,255,255])
+    glVertex3fv([-500,0,0])
+    glVertex3fv([0,0,0])
+    glColor3fv([0,255,0])
+    glVertex3fv([0,0,0])
+    glVertex3fv([500,0,0])
+
+    glColor3fv([255,255,255])
+    glVertex3fv([0,-500,0])
+    glVertex3fv([0,0,0])
+    glColor3fv([0,0,255])
+    glVertex3fv([0,0,0])
+    glVertex3fv([0,500,0])
+
+    glColor3fv([255,255,255])
+    glVertex3fv([0,0,-500])
+    glVertex3fv([0,0,0])
+    glColor3fv([255,0,0])
+    glVertex3fv([0,0,0])
+    glVertex3fv([0,0,500])
     glEnd()
+
+def rotateScreen():
+    keystate = pygame.key.get_pressed()
+    if keystate[K_DOWN]:
+        glRotatef(-1,1,0,0)
+    elif keystate[K_UP]:
+        glRotatef(1,1,0,0)
+    elif keystate[K_LEFT]:
+        glRotatef(-1,0,1,0)
+    elif keystate[K_RIGHT]:
+        glRotatef(1,0,1,0)
+
+class getCommand (threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+    def run(self):
+        global cmd
+        global commandexist
+        while True:
+            cmd = input("Masukan command : ")
+            commandexist = True
+
+class mainThread (threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+    def run(self):
+        main()
 
 def main():
     verticies =  np.array([
@@ -270,7 +258,7 @@ def main():
         [5,4],
         [5,7]
     ])
-    
+
     surfaces = np.array([
         [0,1,2,3],
         [3,2,7,6],
@@ -280,114 +268,74 @@ def main():
         [4,0,3,6]
     ])
     colors = np.array([
-    [1,0,0],
-    [0,1,0],
-    [0,0,1],
-    [0,1,0],
-    [1,1,1],
-    [0,1,1],
-    [1,0,0],
-    [0,1,0],
-    [0,0,1],
-    [1,0,0],
-    [1,1,1],
-    [0,1,1]
+        [1,0,0],
+        [0,1,0],
+        [0,0,1],
+        [0,1,0],
+        [1,1,1],
+        [0,1,1],
+        [1,0,0],
+        [0,1,0],
+        [0,0,1],
+        [1,0,0],
+        [1,1,1],
+        [0,1,1]
     ])
-    
+
+
     pygame.init()
     display = (800,600)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
     gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
-
     glTranslatef(0.0,0.0, -10)
-    state = 1
-    while True:
+    glRotatef(30,1,1,1)
+    global cmd
+    global commandexist
+    cmd = ""
+    commandexist = False
+    while cmd != 'exit':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 quit()
-                '''
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_UP:
-                    rxp = True
-                elif event.key == pygame.K_LEFT:
-                    rym = True
-                elif event.key == pygame.K_RIGHT:
-                    ryp = True
-                elif event.key == pygame.K_DOWN:
-                    rxm = True
-            elif event.type == pygame.KEYUP:
-                if event.key == pygame.K_UP:
-                    rxp = False
-                elif event.key == pygame.K_LEFT:
-                    rym = False
-                elif event.key == pygame.K_RIGHT:
-                    ryp = False
-                elif event.key == pygame.K_DOWN:
-                    rxm = False
-            if rxp == True:
-                glRotatef(1,1,0,0)
-            elif rym == True:
-                glRotatef(-1,0,1,0)
-            elif ryp == True:
-                glRotatef(1,0,1,0)
-            elif rxm == True:
-                glRotatef(-1,1,0,0)
-                '''
-        keystate = pygame.key.get_pressed()
-        if keystate[K_DOWN]:
-            glRotatef(-1,1,0,0)
-        if keystate[K_UP]:
-            glRotatef(1,1,0,0)
-        if keystate[K_LEFT]:
-            glRotatef(-1,0,1,0)
-        if keystate[K_RIGHT]:
-            glRotatef(1,0,1,0)
         glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        rotateScreen()
+        if commandexist:
+            arg = cmd.split(' ')
+            if arg[0] == 'translate':
+                dx = float(arg[1])
+                dy = float(arg[2])
+                dz = float(arg[3])
+                for n in range(60):
+                    verticies = translate(verticies,dx/60,dy/60,dz/60)
+                    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+                    rotateScreen()
+                    Cube(verticies,edges,surfaces,colors)
+                    pygame.display.flip()
+                    pygame.time.wait(round(3000/60))
+            elif arg[0] == 'dilate':
+                k = float(arg[1])
+                for n in range(60):
+                    verticies = dilate(verticies,k**(1./60))
+                    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+                    rotateScreen()
+                    Cube(verticies,edges,surfaces,colors)
+                    pygame.display.flip()
+                    pygame.time.wait(round(3000/60))
+            commandexist = False
+        
+        
         Cube(verticies,edges,surfaces,colors)
+        
         pygame.display.flip()
-        '''
-        if (np.absolute(verticies[0][0]) >= 10): 
-            state = 2
-        elif(np.absolute(verticies[0][0]) <= 1):
-            state = 1
-        if state == 1:
-            verticies = dilate(verticies,1.01)
-        else:
-            verticies = dilate(verticies,0.99)
-        '''
-    
-        verticies = rotate(verticies,0,0.6,0,1,0,1)
-        '''
-        if (np.absolute(verticies[0][0]) >= 5) and (state == 1):
-            state = 2
-        elif (np.absolute(verticies[0][0]) < 1) and (state == 2):
-            state = 3
-        elif (np.absolute(verticies[0][1]) >= 5) and (state == 3):
-            state = 4
-        elif (np.absolute(verticies[0][1]) < 1) and (state == 4):
-            state = 5
-        elif (np.absolute(verticies[0][2]) >= 5) and (state == 5):
-            state = 6
-        elif (np.absolute(verticies[0][2]) < 1) and (state == 6):
-            state = 1
-        if state == 1:
-            verticies = shear(verticies, 'x', 0.01)
-        elif state == 2:
-            verticies = shear(verticies, 'x', -0.01)
-        elif state == 3:
-            verticies = shear(verticies, 'y', 0.01)
-        elif state == 4:
-            verticies = shear(verticies, 'y', -0.01)
-        elif state == 5:
-            verticies = shear(verticies, 'z', 0.01)
-        elif state == 6:
-            verticies = shear(verticies, 'z', -0.01)
-            '''
-        print(verticies)
+        
         pygame.time.wait(1)
 
+global cmd
+global commandexist
+thread1 = getCommand()
+thread2 = mainThread()
+thread1.start()
+thread2.start()
 
-
-main()
