@@ -365,6 +365,46 @@ def main3D():
                     pygame.display.flip()
                     pygame.time.wait(round(3000/60))
                 verticies = dilate(verticies,k)
+            elif arg[0] == 'shear' :
+                param = (arg[1])
+                k = float(arg[2])
+                nextvert = verticies
+                for n in range(60):
+                    nextvert = shear(nextvert,param,(k/60))
+                    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+                    rotateScreen()
+                    ShadowCube(verticies,edges,surfaces)
+                    Cube(nextvert,edges,surfaces,colors)
+                    Sumbu()
+                    pygame.display.flip()
+                    pygame.time.wait(round(3000/60))
+                verticies = shear(verticies,param,k)
+            elif arg[0] == 'stretch' :
+                param = (arg[1])
+                k = float(arg[2])
+                nextvert = verticies
+                for n in range(60):
+                    nextvert = stretch(nextvert,param,(k**(1./60)))
+                    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+                    rotateScreen()
+                    ShadowCube(verticies,edges,surfaces)
+                    Cube(nextvert,edges,surfaces,colors)
+                    Sumbu()
+                    pygame.display.flip()
+                    pygame.time.wait(round(3000/60))
+                verticies = stretch(verticies,param,k)
+            elif arg[0] == 'custom' :
+                a = float(arg[1])
+                b = float(arg[2])
+                c = float(arg[3])
+                d = float(arg[4])
+                e = float(arg[5])
+                f = float(arg[6])
+                g = float(arg[7])
+                h = float(arg[8])
+                i = float(arg[9])
+                nextvert = verticies
+                verticies = custom(verticies,a,b,c,d,e,f,g,h,i)
             elif arg[0] == 'reset':
                 verticies = initvert
             commandexist = False
