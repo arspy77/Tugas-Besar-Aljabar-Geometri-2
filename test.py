@@ -6,6 +6,30 @@ from OpenGL.GLU import *
 import numpy as np
 import threading
 
+def shear2d(verticies, param, k):
+    if param == 'x':
+        tfMat = np.array([
+            [1,k,0]
+            [0,1,0]
+            [0,0,1]
+        ])
+    elif param == 'y':
+        tfMat = np.array([
+            [1,0,0]
+            [k,1,0]
+            [0,0,1]
+        )]
+    newV = np.empty((0,2), float)
+    for vertex in verticies:
+        vertex = np.append(vertex , [1])
+        temp = np.matmul(tfMat,vertex.T)
+        keep = [True,True,False]
+        temp = np.array(temp[keep])
+        temp = np.array([temp])
+        newV = np.vstack((newV, temp))
+    return newV
+    
+
 def shear(verticies, param, k):
     if param == 'x':
         tfMat = np.array([
@@ -38,6 +62,22 @@ def shear(verticies, param, k):
         newV = np.vstack((newV, temp))
     return newV
 
+def custom2d(verticies, a, b, c, d):
+    tfMat = np.array([
+        [a,b,0]
+        [c,d,0]
+        [0,0,1]
+    ])
+    newV = np.empty((0,2), float)
+    for vertex in verticies:
+        vertex = np.append(vertex , [1])
+        temp = np.matmul(tfMat,vertex.T)
+        keep = [True,True,False]
+        temp = np.array(temp[keep])
+        temp = np.array([temp])
+        newV = np.vstack((newV, temp))
+    return newV
+
 
 def custom(verticies, a, b, c, d, e, f, g, h, i):
     tfMat = np.array([
@@ -51,6 +91,29 @@ def custom(verticies, a, b, c, d, e, f, g, h, i):
         vertex = np.append(vertex , [1])
         temp = np.matmul(tfMat,vertex.T)
         keep = [True,True,True,False]
+        temp = np.array(temp[keep])
+        temp = np.array([temp])
+        newV = np.vstack((newV, temp))
+    return newV
+
+def stretch2d(verticies, param, k):
+    if param == 'x'
+        tfMat = np.array([
+            [k,0,0]
+            [0,1,0]
+            [0,0,1]
+        ])
+    elif param == 'y'
+        tfMat = np.array([
+            [1,0,0]
+            [0,k,0]
+            [0,0,1]
+        ])
+    newV = np.empty((0,2), float)
+    for vertex in verticies:
+        vertex = np.append(vertex , [1])
+        temp = np.matmul(tfMat,vertex.T)
+        keep = [True,True,False]
         temp = np.array(temp[keep])
         temp = np.array([temp])
         newV = np.vstack((newV, temp))
@@ -89,6 +152,21 @@ def stretch(verticies, param, k):
     return newV
 
 
+def translate2d(verticies, dx, dy, dz):
+    tfMat = np.array([
+        [1,0,dx]
+        [0,1,dy]
+        [0,0,1]
+    ])
+    newV = np.empty((0,2), float)
+    for vertex in verticies:
+        vertex = np.append(vertex , [1])
+        temp = np.matmul(tfMat,vertex.T)
+        keep = [True,True,False]
+        temp = np.array(temp[keep])
+        temp = np.array([temp])
+        newV = np.vstack((newV, temp))
+    return newV
 
 def translate(verticies, dx, dy, dz):
     tfMat = np.array([
@@ -105,7 +183,23 @@ def translate(verticies, dx, dy, dz):
         temp = np.array(temp[keep])
         temp = np.array([temp])
         newV = np.vstack((newV, temp))
-    return newV 
+    return newV
+
+def dilate2d(verticies, k):
+    tfMat = np.array([
+        [k,0,0]
+        [0,k,0]
+        [0,0,1]
+    )]
+    newV = np.empty((0,2), float)
+    for vertex in verticies:
+        vertex = np.append(vertex , [1])
+        temp = np.matmul(tfMat,vertex.T)
+        keep = [True,True,False]
+        temp = np.array(temp[keep])
+        temp = np.array([temp])
+        newV = np.vstack((newV, temp))
+    return newV
 
 def dilate(verticies, k):
     tfMat = np.array([
@@ -122,7 +216,34 @@ def dilate(verticies, k):
         temp = np.array(temp[keep])
         temp = np.array([temp])
         newV = np.vstack((newV, temp))
-    return newV 
+    return newV
+
+def rotate2d(verticies, degree, x, y):
+    translateToZeroMat = np.array([
+        [1,0,-x]
+        [0,1,-y]
+        [0,0,1]
+    ])
+    RotateMat = np.array([
+        [np.math.cos((degreeX/360)*2*np.pi),-(np.math.sin((degreeX/360)*2*np.pi)),0],
+        [-(np.math.sin((degreeX/360)*2*np.pi)),np.math.cos((degreeX/360)*2*np.pi),0],
+        [0,0,1]
+    ])
+    translateBackMat = np.array([
+        [1,0,x],
+        [0,1,y],
+        [0,0,1]
+    ])
+    tfMat = np.matmul(translateBackMat, np.matmul(xRotateMat, np.matmul(yRotateMat,translateToZeroMat)))
+    for vertex in verticies:
+        vertex = np.append(vertex , [1])
+        temp = np.matmul(tfMat,vertex.T)
+        keep = [True,True,False]
+        temp = np.array(temp[keep])
+        temp = np.array([temp])
+        newV = np.vstack((newV, temp))
+    return newV
+        
 
 def rotate(verticies, degreeX, degreeY, degreeZ, x, y, z):
     translateToZeroMat = np.array([
@@ -164,7 +285,7 @@ def rotate(verticies, degreeX, degreeY, degreeZ, x, y, z):
         temp = np.array(temp[keep])
         temp = np.array([temp])
         newV = np.vstack((newV, temp))
-    return newV 
+    return newV
 
 
 def Cube(verticies,edges,surfaces,colors):
@@ -365,46 +486,6 @@ def main3D():
                     pygame.display.flip()
                     pygame.time.wait(round(3000/60))
                 verticies = dilate(verticies,k)
-            elif arg[0] == 'shear' :
-                param = (arg[1])
-                k = float(arg[2])
-                nextvert = verticies
-                for n in range(60):
-                    nextvert = shear(nextvert,param,(k/60))
-                    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-                    rotateScreen()
-                    ShadowCube(verticies,edges,surfaces)
-                    Cube(nextvert,edges,surfaces,colors)
-                    Sumbu()
-                    pygame.display.flip()
-                    pygame.time.wait(round(3000/60))
-                verticies = shear(verticies,param,k)
-            elif arg[0] == 'stretch' :
-                param = (arg[1])
-                k = float(arg[2])
-                nextvert = verticies
-                for n in range(60):
-                    nextvert = stretch(nextvert,param,(k**(1./60)))
-                    glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-                    rotateScreen()
-                    ShadowCube(verticies,edges,surfaces)
-                    Cube(nextvert,edges,surfaces,colors)
-                    Sumbu()
-                    pygame.display.flip()
-                    pygame.time.wait(round(3000/60))
-                verticies = stretch(verticies,param,k)
-            elif arg[0] == 'custom' :
-                a = float(arg[1])
-                b = float(arg[2])
-                c = float(arg[3])
-                d = float(arg[4])
-                e = float(arg[5])
-                f = float(arg[6])
-                g = float(arg[7])
-                h = float(arg[8])
-                i = float(arg[9])
-                nextvert = verticies
-                verticies = custom(verticies,a,b,c,d,e,f,g,h,i)
             elif arg[0] == 'reset':
                 verticies = initvert
             commandexist = False
