@@ -130,7 +130,7 @@ def rotate(verticies, degreeX, degreeY, degreeZ, x, y, z):
         [0,1,0,-y],
         [0,0,1,-z],
         [0,0,0,1]
-    ]) 
+    ])  
     xRotateMat = np.array([
         [1,0,0,0],
         [0,np.math.cos((degreeX/360)*2*np.pi),-(np.math.sin((degreeX/360)*2*np.pi)),0],
@@ -183,6 +183,32 @@ def Cube(verticies,edges,surfaces,colors):
             glVertex3fv(verticies[vertex])
     glEnd()
 
+def Shape(verticies):
+    glBegin(GL_POLYGON)
+    
+    glColor3fv([255,0,0])
+    for i in range(int(verticies.size/2)):
+        glVertex2fv(verticies[i])
+    '''
+    glEnd()
+
+    glBegin(GL_LINES)
+    '''
+    glColor3fv([255,255,255])
+    for i in range(int(verticies.size/2)):
+        '''
+        if i == 0:
+            glVertex2fv(verticies[int(verticies.size/2)-1])
+            glVertex2fv(verticies[i])
+        else:
+            glVertex2fv(verticies[i-1])
+            '''
+        glVertex2fv(verticies[i])
+
+
+    glEnd()
+
+
 def ShadowCube(verticies,edges,surfaces):
 
     '''
@@ -202,7 +228,7 @@ def ShadowCube(verticies,edges,surfaces):
             glVertex3fv(verticies[vertex])
     glEnd()
 
-def Sumbu():  
+def Sumbu3D():  
     glBegin(GL_LINES)  
     glColor3fv([255,255,255])
     glVertex3fv([-500,0,0])
@@ -226,6 +252,23 @@ def Sumbu():
     glVertex3fv([0,0,500])
     glEnd()
 
+def Sumbu2D():  
+    glBegin(GL_LINES)  
+    glColor3fv([255,255,255])
+    glVertex2fv([-500,0])
+    glVertex2fv([0,0])
+    glColor3fv([0,255,0])
+    glVertex2fv([0,0])
+    glVertex2fv([500,0])
+
+    glColor3fv([255,255,255])
+    glVertex2fv([0,-500])
+    glVertex2fv([0,0])
+    glColor3fv([0,0,255])
+    glVertex2fv([0,0])
+    glVertex2fv([0,500])
+    glEnd()
+
 def rotateScreen():
     keystate = pygame.key.get_pressed()
     if keystate[K_DOWN]:
@@ -237,6 +280,25 @@ def rotateScreen():
     elif keystate[K_RIGHT]:
         glRotatef(1,0,1,0)
 
+def Animate(verticies, nextvert, edges, surfaces, colors):
+    anivert = np.copy(verticies)
+    for n in range(60):
+        for i in range(int(verticies.size/3)):
+            dx = nextvert[i][0] - verticies[i][0]
+            dy = nextvert[i][1] - verticies[i][1]
+            dz = nextvert[i][2] - verticies[i][2]
+            temp = translate(np.array([anivert[i]]),dx/60,dy/60,dz/60)
+            anivert[i] = temp[0]
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        rotateScreen()
+        ShadowCube(verticies,edges,surfaces)
+        Cube(anivert,edges,surfaces,colors)
+        Sumbu3D()
+        pygame.display.flip()
+        pygame.time.wait(50)
+    return
+
+
 class getCommand (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
@@ -247,11 +309,25 @@ class getCommand (threading.Thread):
             cmd = input("Masukan command : ")
             commandexist = True
 
-class mainThread (threading.Thread):
-    def __init__(self):
-        threading.Thread.__init__(self)
-    def run(self):
-        main()
+def inputVerticies():
+    global N
+    N = int(input("Masukan Jumlah Titik : "))
+    while N < 1:
+        print("Masukan salah")
+        N = int(input("Masukan Jumlah Titik : "))
+    for i in range(N):
+        print("Masukan titik ke-" + str(i) + " (format : x y): ")
+        vertex = (input().split(' '))
+        x = int(vertex[0])
+        y = int(vertex[1])
+        vertex[0] = x
+        vertex[1] = y
+        vertex = np.array([vertex])
+        if i == 0:
+            verticies = vertex
+        else:
+            verticies = np.append(verticies,vertex,axis = 0)
+    return verticies
 
 def main():
     
@@ -261,20 +337,62 @@ def main():
         print("Masukan salah!")
         mode = int(input("Masukan pilihan : "))
     if mode == 1:
-        print("WIP")
+        main2D()
     else:
         main3D()
 
+def main2D():
+    global N
+    verticies = inputVerticies()
+    initvert = verticies
+    pygame.init()
+    display = (800,800)
+    pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
+
+    gluPerspective(45, (display[0]/display[1]), 0.1, 4000.0)
+    glTranslatef(0.0,0.0, -1500.0)
+    global cmd
+    global commandexist
+    threadcmd = getCommand()
+    cmd = ""
+    commandexist = False
+    threadcmd.start()
+    while cmd != 'exit':
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.display.quit()
+                pygame.quit()
+                quit()
+        glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+        if commandexist:
+            arg = cmd.split(' ')
+            if arg[0] == 'translate':
+                print("wip")
+            elif arg[0] == 'dilate':
+                verticies = dilate(verticies,k)
+            elif arg[0] == 'reset':
+                verticies = initvert
+            commandexist = False
+            
+        
+        
+        Shape(verticies)
+        Sumbu2D()
+
+        pygame.display.flip()
+        
+        pygame.time.wait(1)
+
 def main3D():
     verticies =  np.array([
-        [1, -1, -1],
-        [1, 1, -1],
-        [-1, 1, -1],
-        [-1, -1, -1],
-        [1, -1, 1],
-        [1, 1, 1],
-        [-1, -1, 1],
-        [-1, 1, 1]
+        [50, -50, -50],
+        [50, 50, -50],
+        [-50, 50, -50],
+        [-50, -50, -50],
+        [50, -50, 50],
+        [50, 50, 50],
+        [-50, -50, 50],
+        [-50, 50, 50]
     ])
     edges = np.array([
         [0,1],
@@ -313,20 +431,20 @@ def main3D():
         [1,1,1],
         [0,1,1]
     ])
-    initvert = verticies
+    initvert = np.copy(verticies)
     pygame.init()
-    display = (800,600)
+    display = (800,800)
     pygame.display.set_mode(display, DOUBLEBUF|OPENGL)
 
-    gluPerspective(45, (display[0]/display[1]), 0.1, 50.0)
-    glTranslatef(0.0,0.0, -10)
+    gluPerspective(45, (display[0]/display[1]), 0.1, 4000.0)
+    glTranslatef(0.0,0.0, -1500.0)
     glRotatef(30,1,1,1)
     global cmd
     global commandexist
     threadcmd = getCommand()
-    threadcmd.start()
     cmd = ""
     commandexist = False
+    threadcmd.start()
     while cmd != 'exit':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -341,14 +459,13 @@ def main3D():
                 dx = float(arg[1])
                 dy = float(arg[2])
                 dz = float(arg[3])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = translate(nextvert,dx/60,dy/60,dz/60)
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-                    rotateScreen()
                     ShadowCube(verticies,edges,surfaces)
                     Cube(nextvert,edges,surfaces,colors)
-                    Sumbu()
+                    Sumbu3D()
                     pygame.display.flip()
                     pygame.time.wait(round(3000/60))
                 verticies = translate(verticies,dx,dy,dz)
@@ -358,31 +475,34 @@ def main3D():
                 for n in range(60):
                     nextvert = dilate(nextvert,k**(1./60))
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
-                    rotateScreen()
                     ShadowCube(verticies,edges,surfaces)
                     Cube(nextvert,edges,surfaces,colors)
-                    Sumbu()
+                    Sumbu3D()
                     pygame.display.flip()
                     pygame.time.wait(round(3000/60))
                 verticies = dilate(verticies,k)
+            elif arg[0] == 'rotate':
+                degreeX = float(arg[1])
+                degreeY = float(arg[2])
+                degreeZ = float(arg[3])
+                x = float(arg[4])
+                y = float(arg[5])
+                z = float(arg[6])
+                verticies = rotate(verticies, degreeX, degreeY, degreeZ, x, y, z)
             elif arg[0] == 'reset':
-                verticies = initvert
+                Animate(verticies,initvert,edges,surfaces,colors)
+                verticies = np.copy(initvert)
             commandexist = False
             
         
         
         Cube(verticies,edges,surfaces,colors)
-        Sumbu()
+        Sumbu3D()
 
         pygame.display.flip()
         
         pygame.time.wait(1)
 
-global cmd
-global commandexist
 main()
-#thread1 = getCommand()
-#thread2 = mainThread()
-#thread1.start()
-#thread2.start()
+
 
