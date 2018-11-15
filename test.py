@@ -234,7 +234,7 @@ def rotate2d(verticies, degree, x, y):
         [0,1,y],
         [0,0,1]
     ])
-    tfMat = np.matmul(translateBackMat, np.matmul(xRotateMat, np.matmul(yRotateMat,translateToZeroMat)))
+    tfMat = np.matmul(translateBackMat, np.matmul(RotateMat,translateToZeroMat))
     for vertex in verticies:
         vertex = np.append(vertex , [1])
         temp = np.matmul(tfMat,vertex.T)
