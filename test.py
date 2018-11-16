@@ -123,39 +123,17 @@ def dilate(verticies, k):
         temp = np.array([temp])
         newV = np.vstack((newV, temp))
     return newV 
+def reflect(verticies, a, b, c) :
 
-def rotate(verticies, degreeX, degreeY, degreeZ, x, y, z):
-    translateToZeroMat = np.array([
-        [1,0,0,-x],
-        [0,1,0,-y],
-        [0,0,1,-z],
+    ab = a*b
+    ac = a*c
+    bc = b*c
+    tfMat = np.array([
+        [1-(2*a*a),-2*ab,-2*ac,0],
+        [-2*ab,1-(2*b*b),-2*bc,0],
+        [-2*ac,-2*bc,1-(2*c*c),0],
         [0,0,0,1]
-    ])  
-    xRotateMat = np.array([
-        [1,0,0,0],
-        [0,np.math.cos((degreeX/360)*2*np.pi),-(np.math.sin((degreeX/360)*2*np.pi)),0],
-        [0,np.math.sin((degreeX/360)*2*np.pi),np.math.cos((degreeX/360)*2*np.pi),0],
-        [0,0,0,1]
-    ]) 
-    yRotateMat = np.array([
-        [np.math.cos((degreeY/360)*2*np.pi),0,np.math.sin((degreeY/360)*2*np.pi),0],
-        [0,1,0,0],
-        [-(np.math.sin((degreeY/360)*2*np.pi)),0,np.math.cos((degreeY/360)*2*np.pi),0],
-        [0,0,0,1]
-    ]) 
-    zRotateMat = np.array([
-        [np.math.cos((degreeZ/360)*2*np.pi),-(np.math.sin((degreeZ/360)*2*np.pi)),0,0],
-        [np.math.sin((degreeZ/360)*2*np.pi),np.math.cos((degreeZ/360)*2*np.pi),0,0],
-        [0,0,1,0],
-        [0,0,0,1]
-    ]) 
-    translateBackMat = np.array([
-        [1,0,0,x],
-        [0,1,0,y],
-        [0,0,1,z],
-        [0,0,0,1]
-    ]) 
-    tfMat = np.matmul(translateBackMat, np.matmul(xRotateMat, np.matmul(yRotateMat, np.matmul(zRotateMat, translateToZeroMat))))
+    ])
     newV = np.empty((0,3), float)
     for vertex in verticies:
         vertex = np.append(vertex , [1])
@@ -164,7 +142,37 @@ def rotate(verticies, degreeX, degreeY, degreeZ, x, y, z):
         temp = np.array(temp[keep])
         temp = np.array([temp])
         newV = np.vstack((newV, temp))
-    return newV 
+    return newV
+
+def rot(verticies, a, b, c, degree) :
+    degree = degree*np.pi/180
+    cosa = np.math.cos(degree)
+    sina = np.math.sin(degree)
+    ab = a*b
+    bc = b*c
+    ac = a*c
+    tfMat = np.array([
+        [1,0,0,0],
+        [a,1,0,0],
+        [b,0,1,0],
+        [0,0,0,1]
+    ])
+    tfMat = np.array([
+        [cosa+((a**2)*(1-cosa)),ab*(1-cosa)-(c*sina),ac*(1-cosa)+(b*sina),0],
+        [ab*(1-cosa)+(c*sina),cosa+((b**2)*(1-cosa)),bc*(1-cosa)-(a*sina),0],
+        [ac*(1-cosa)-(b*sina),bc*(1-cosa)+(a*sina),cosa+((c**2)*(1-cosa)),0],
+        [0,0,0,1]
+    ])
+    newV = np.empty((0,3), float)
+    for vertex in verticies:
+        vertex = np.append(vertex , [1])
+        temp = np.matmul(tfMat,vertex.T)
+        keep = [True,True,True,False]
+        temp = np.array(temp[keep])
+        temp = np.array([temp])
+        newV = np.vstack((newV, temp))
+    return newV
+
 
 
 def Cube(verticies,edges,surfaces,colors):
@@ -481,15 +489,22 @@ def main3D():
                     pygame.display.flip()
                     pygame.time.wait(round(3000/60))
                 verticies = dilate(verticies,k)
-            elif arg[0] == 'rotate':
-                degreeX = float(arg[1])
-                degreeY = float(arg[2])
-                degreeZ = float(arg[3])
-                x = float(arg[4])
-                y = float(arg[5])
-                z = float(arg[6])
-                verticies = rotate(verticies, degreeX, degreeY, degreeZ, x, y, z)
-            elif arg[0] == 'shear' :
+           elif arg[0] == 'rotate' :
+                  a = float(arg[1])
+                  b = float(arg[2])
+                  c = float(arg[3])
+                  degree = float(arg[4])
+                  nextvert = verticies
+                  for n in range(60):
+                      nextvert = rot(nextvert,a,b,c,degree/60)
+                      glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
+                      rotateScreen()
+                      ShadowCube(verticies,edges,surfaces)
+                      Cube(nextvert,edges,surfaces,colors)
+                      Sumbu3D()
+                      pygame.display.flip()
+                      pygame.time.wait(round(3000/60))
+                  verticies = rot(verticies,a,b,c,degree)
                 param = (arg[1])
                 k = float(arg[2])
                 nextvert = verticies
@@ -513,7 +528,7 @@ def main3D():
                     rotateScreen()
                     ShadowCube(verticies,edges,surfaces)
                     Cube(nextvert,edges,surfaces,colors)
-                    Sumbu()
+                    Sumbu3D()
                     pygame.display.flip()
                     pygame.time.wait(round(3000/60))
                 verticies = stretch(verticies,param,k)
@@ -529,6 +544,19 @@ def main3D():
                 i = float(arg[9])
                 nextvert = verticies
                 verticies = custom(verticies,a,b,c,d,e,f,g,h,i)
+                Animate(nextvert,verticies,edges,surfaces,colors)
+            elif arg[0] == 'reflect' :
+                a = float(arg[1])
+                b = float (arg[2])
+                c = float (arg[3])
+                if not(a == 0.0 and b == 0.0 and c == 0.0) :
+                    mag = (a*a+b*b+c*c)**(1.0/2.0)
+                    aa = a/mag
+                    bb = b/mag
+                    cc = c/mag
+                    nextvert = reflect(verticies,aa,bb,cc)
+                    Animate(verticies,nextvert,edges,surfaces,colors)
+                    verticies = nextvert
             elif arg[0] == 'reset':
                 Animate(verticies,initvert,edges,surfaces,colors)
                 verticies = np.copy(initvert)
