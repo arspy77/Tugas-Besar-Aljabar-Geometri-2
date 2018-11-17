@@ -6,6 +6,23 @@ from OpenGL.GLU import *
 import numpy as np
 import threading
 
+def reflect2d(verticies, param, a, b) :
+    if param == "point":
+        tfMat = np.array([
+			[-1,0,0],
+			[0,-1,0],
+			[0,0,1]
+		])
+        newV = np.empty((0,2), float)
+        for vertex in verticies:
+            vertex = np.append(vertex , [1])
+            temp = np.matmul(tfMat,vertex.T)
+            keep = [True,True,False]
+            temp = np.array(temp[keep])
+            temp = np.array([temp])
+            newV = np.vstack((newV, temp))
+        return newV
+
 def shear2d(verticies, param, k):
 	if param == 'x':
 		tfMat = np.array([
@@ -579,6 +596,19 @@ def main2D():
 				d = float(arg[4])
 				Animate2D(verticies, custom2d(verticies,a,b,c,d))
 				verticies = custom2d(verticies,a,b,c,d)
+			if arg[0] == 'reflect' :
+				nextvert = verticies
+				a = arg[1]
+				if(a=="y=x" or a == "y=-x" or a == "y" or a == "x"):
+				    a = arg[1]
+				    verticies = reflect2d(verticies,a,0,0)
+				else :
+				    a = float(arg[1])
+				    b = float(arg[2])
+				    verticies = translate2d(verticies,-a,-b)
+				    verticies = reflect2d(verticies,"point",a,b)
+				    verticies = translate2d(verticies,a,b)
+				Animate2D(nextvert,verticies)
 			elif arg[0] == 'reset':
 				Animate2D(verticies, initvert)
 				verticies = initvert
