@@ -337,7 +337,7 @@ def reflect3D(verticies, param) :
 
 
 def rotate3D(verticies, a, b, c, degree) :
-    panjangVektor = np.sqrt(a*a+b**b+c*c)
+    panjangVektor = np.sqrt(a*a+b*b+c*c)
     a /= panjangVektor
     b /= panjangVektor
     c /= panjangVektor

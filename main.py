@@ -200,7 +200,7 @@ def main3D():
                 verticies = translate3D(verticies, dx, dy, dz)
             elif arg[0] == 'dilate':
                 k = float(arg[1])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = dilate3D(nextvert, k**(1./60))
                     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -215,7 +215,7 @@ def main3D():
                 b = float(arg[2])
                 c = float(arg[3])
                 degree = float(arg[4])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                       nextvert = rotate3D(nextvert, a, b, c, degree/60)
                       glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -229,7 +229,7 @@ def main3D():
                 param1 = (arg[1])
                 param2 = (arg[2])
                 k = float(arg[3])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = shear3D(nextvert,param1,param2,(k/60))
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -242,7 +242,7 @@ def main3D():
             elif arg[0] == 'stretch' :
                 param = (arg[1])
                 k = float(arg[2])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = stretch3D(nextvert,param,(k**(1./60)))
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -262,7 +262,7 @@ def main3D():
                 g = float(arg[7])
                 h = float(arg[8])
                 i = float(arg[9])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 verticies = custom3D(verticies,a,b,c,d,e,f,g,h,i)
                 Animate3D(nextvert,verticies,edges,surfaces,colors)
             elif arg[0] == 'reflect' :
@@ -291,7 +291,7 @@ def main3D():
                         verticies = translate3D(verticies, dx, dy, dz)
                     elif arg[0] == 'dilate':
                         k = float(arg[1])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = dilate3D(nextvert, k**(1./60))
                             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -306,7 +306,7 @@ def main3D():
                         b = float(arg[2])
                         c = float(arg[3])
                         degree = float(arg[4])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = rotate3D(nextvert, a, b, c, degree/60)
                             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
@@ -320,7 +320,7 @@ def main3D():
                         param1 = (arg[1])
                         param2 = (arg[2])
                         k = float(arg[3])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = shear3D(nextvert,param1,param2,(k/60))
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -333,7 +333,7 @@ def main3D():
                     elif arg[0] == 'stretch' :
                         param = (arg[1])
                         k = float(arg[2])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = stretch3D(nextvert,param,(k**(1./60)))
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -353,7 +353,7 @@ def main3D():
                         g = float(arg[7])
                         h = float(arg[8])
                         i = float(arg[9])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         verticies = custom3D(verticies,a,b,c,d,e,f,g,h,i)
                         Animate3D(nextvert,verticies,edges,surfaces,colors)
                     elif arg[0] == 'reflect' :
@@ -412,7 +412,7 @@ def main2D():
                 verticies = translate2D(verticies,dx,dy)
             elif arg[0] == 'dilate':
                 k = float(arg[1])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = dilate2D(nextvert,k**(1./60))
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -426,7 +426,7 @@ def main2D():
                 degree = float(arg[1])
                 x = float(arg[2])
                 y = float(arg[3])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = rotate2D(nextvert,(degree/60), x, y)
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -439,7 +439,7 @@ def main2D():
             elif arg[0] == 'shear' :
                 param = (arg[1])
                 k = float(arg[2])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = shear2D(nextvert,param,(k/60))
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -452,7 +452,7 @@ def main2D():
             elif arg[0] == 'stretch' :
                 param = (arg[1])
                 k = float(arg[2])
-                nextvert = verticies
+                nextvert = np.copy(verticies)
                 for n in range(60):
                     nextvert = stretch2D(nextvert,param,(k**(1./60)))
                     glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -497,7 +497,7 @@ def main2D():
                         verticies = translate2D(verticies,dx,dy)
                     elif arg[0] == 'dilate':
                         k = float(arg[1])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = dilate2D(nextvert,k**(1./60))
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -511,7 +511,7 @@ def main2D():
                         degree = float(arg[1])
                         x = float(arg[2])
                         y = float(arg[3])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = rotate2D(nextvert,(degree/60), x, y)
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -524,7 +524,7 @@ def main2D():
                     elif arg[0] == 'shear' :
                         param = (arg[1])
                         k = float(arg[2])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = shear2D(nextvert,param,(k/60))
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
@@ -537,7 +537,7 @@ def main2D():
                     elif arg[0] == 'stretch' :
                         param = (arg[1])
                         k = float(arg[2])
-                        nextvert = verticies
+                        nextvert = np.copy(verticies)
                         for n in range(60):
                             nextvert = stretch2D(nextvert,param,(k**(1./60)))
                             glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT)
