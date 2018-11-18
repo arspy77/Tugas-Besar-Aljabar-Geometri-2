@@ -185,7 +185,7 @@ def shear3D(verticies, param1, param2, k):
             ])
         elif param2 == 'y':
             tfMat = np.array([
-                [1, 0,k,0],
+                [1, 0,0,0],
                 [0, 1,0,0],
                 [0, k,1,0],
                 [0, 0,0,1]
