@@ -363,7 +363,7 @@ def main3D():
                     elif arg[0] == 'reset':
                         Animate3D(verticies,initvert,edges,surfaces,colors)
                         verticies = np.copy(initvert)
-                    multicmd = []
+                multicmd = []
             commandexist = False
         Cube(verticies,edges,surfaces,colors)
         Sumbu3D()
@@ -561,7 +561,7 @@ def main2D():
                     elif arg[0] == 'reset':
                         Animate2D(verticies, initvert)
                         verticies = initvert
-
+                multicmd = []
                 #End Multiple
 
             commandexist = False
